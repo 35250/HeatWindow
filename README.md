@@ -209,10 +209,6 @@ Amazon Cognito User Pools handle sign-up, email verification and sign-in. API Ga
 
 AWS SAM describes the Lambda function, API Gateway, Cognito User Pool, app client, environment variables, permissions and outputs in `template.yaml`. SAM builds the deployment artefacts and deploys the stack through AWS CloudFormation.
 
-### Persistence
-
-**The current version does not use a database.** It does not save user task plans, past recommendations, or scheduling history. DynamoDB was intentionally left out because it is not required for the current request/response flow.
-
 ---
 
 ## Technology stack and why it is used
@@ -241,10 +237,6 @@ AWS SAM describes the Lambda function, API Gateway, Cognito User Pool, app clien
 ### Why a serverless architecture?
 
 The backend is request-driven: a schedule request arrives, the function gathers context, calls the model, returns a recommendation, and finishes. Lambda and API Gateway avoid the need to operate a continuously running application server for this workload. Cognito supplies managed user authentication, and Bedrock provides hosted model inference rather than requiring a model to be trained or hosted in the project.
-
-### Why there is no DynamoDB in this version
-
-HeatWindow currently processes a request and returns a recommendation; it does not need to save the request or result to deliver that feature. A database would add infrastructure and access-control work without being necessary for this workflow. Persistent plans, saved preferences, or recommendation history could justify adding storage in a future version.
 
 ---
 
@@ -429,8 +421,6 @@ The live deployment exposes the `POST /recommend` endpoint. The current frontend
 ---
 
 ## Project structure
-
-The exact local tree may contain additional generated files (for example, `.aws-sam/`, `node_modules/`, and `samconfig.toml`). The main source files are:
 
 ```text
 HeatWindow/
@@ -691,15 +681,6 @@ Potential next steps include:
 
 ChatGPT was used as an AI development assistant during this project. This use is acknowledged explicitly to be transparent about the development process.
 
-### Human contribution — Ayan Dey
-
-- Defined the project direction and its goal of making everyday outdoor planning more aware of heat exposure.
-- Selected and refined the problem scope, user workflows, required form fields, and scheduling preferences.
-- Created and configured the AWS resources and worked through deployment and runtime issues.
-- Integrated, tested, and iterated on the frontend and backend in the project environment.
-- Evaluated generated recommendations, identified route-continuity and rest-break issues, and requested tighter scheduling and reasoning requirements.
-- Made decisions about which features to include in the hackathon version and which integrations to defer.
-
 ### ChatGPT assistance
 
 ChatGPT helped with:
@@ -710,8 +691,6 @@ ChatGPT helped with:
 - Debugging errors using user-provided terminal logs and code, including geocoding and variable-scope issues.
 - Iteratively improving the LLM prompt to make task order, route continuity, rest decisions, and weather-based explanations more explicit.
 - Helping design the user-facing form, error handling, and project documentation.
-
-ChatGPT is an AI assistant and is not a human teammate or project owner. Code and suggestions were reviewed, adapted, run, tested, and refined in the project environment. AI-generated suggestions can be incorrect; the project owner remains responsible for verification, operation, and future maintenance.
 
 ---
 
