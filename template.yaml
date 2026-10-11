@@ -1,0 +1,111 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: HeatWindow heat-aware outdoor task scheduling assistant
+
+Parameters:
+  BedrockModelId:
+    Type: String
+    Description: Exact working Bedrock model ID from your local .env file
+
+Resources:
+
+  # 1. Cognito: user sign-up and login
+  HeatWindowUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: HeatWindowUsers
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+      Schema:
+        - AttributeDataType: String
+          Name: email
+          Required: true
+          Mutable: true
+
+  # Public app client: used by the frontend, so no client secret
+  HeatWindowUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: HeatWindowWebClient
+      UserPoolId: !Ref HeatWindowUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      PreventUserExistenceErrors: LEGACY
+
+  # 2. API Gateway: one authenticated POST endpoint
+  HeatWindowApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: HeatWindowApi
+      StageName: Prod
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowMethods: "'OPTIONS,POST'"
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: false
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt HeatWindowUserPool.Arn
+            Identity:
+              Header: Authorization
+
+  # 3. Lambda: your existing recommendation handler
+  RecommendScheduleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: src/bedrock/recommendSchedule.handler
+      Runtime: nodejs24.x
+      Timeout: 29
+      MemorySize: 512
+
+      Environment:
+        Variables:
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+
+      # Allow the handler to call the selected Bedrock model.
+      # Narrow this permission to specific model resources after deployment.
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: "*"
+
+      Events:
+        RecommendSchedule:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HeatWindowApi
+            Path: /recommend
+            Method: POST
+
+Outputs:
+
+  RecommendApiUrl:
+    Description: API endpoint for schedule recommendations
+    Value: !Sub 'https://${HeatWindowApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/recommend'
+
+  CognitoUserPoolId:
+    Description: Cognito user pool ID for frontend authentication
+    Value: !Ref HeatWindowUserPool
+
+  CognitoUserPoolClientId:
+    Description: Cognito app client ID for frontend authentication
+    Value: !Ref HeatWindowUserPoolClient

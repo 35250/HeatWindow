@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8f4">
+  <meta name="description" content="Plan outdoor tasks around the weather with HeatWindow.">
+  <title>HeatWindow | Plan smarter outdoors</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./config.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+
+<body>
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-icon">H</span>
+      <span>HeatWindow</span>
+    </a>
+    <span class="topbar-note">Weather-aware daily planning</span>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <p class="eyebrow">PLAN WITH THE WEATHER</p>
+      <h1>Your day, planned <span>around the heat.</span></h1>
+      <p class="hero-description">
+        Tell us what you need to do, where you need to go, and which
+        tasks can move. HeatWindow uses the weather forecast to recommend
+        a practical schedule that considers heat exposure.
+      </p>
+      <div class="feature-row">
+        <span>01 &nbsp; Your tasks</span>
+        <span>02 &nbsp; Local forecast</span>
+        <span>03 &nbsp; Suggested schedule</span>
+      </div>
+    </section>
+
+    <!-- Authentication -->
+    <section id="auth-section" class="panel auth-panel">
+      <div class="section-title">
+        <p class="eyebrow">YOUR ACCOUNT</p>
+        <h2>Welcome to HeatWindow</h2>
+        <p>Create an account or sign in to plan your day.</p>
+      </div>
+
+      <div id="auth-tabs" class="tabs">
+        <button type="button" id="tab-signin" class="tab active">Sign in</button>
+        <button type="button" id="tab-signup" class="tab">Create account</button>
+      </div>
+
+      <form id="signin-form" class="form-stack">
+        <label>
+          Email address
+          <input id="signin-email" type="email" autocomplete="username"
+                 placeholder="you@example.com" required>
+        </label>
+        <label>
+          Password
+          <input id="signin-password" type="password"
+                 autocomplete="current-password"
+                 placeholder="Enter your password" required>
+        </label>
+        <button class="button primary full-button" type="submit">Sign in</button>
+      </form>
+
+      <form id="signup-form" class="form-stack" hidden>
+        <label>
+          Email address
+          <input id="signup-email" type="email" autocomplete="email"
+                 placeholder="you@example.com" required>
+        </label>
+
+        <label>
+          Create a password
+          <input id="signup-password" type="password"
+                 autocomplete="new-password" maxlength="256"
+                 placeholder="Create a strong password" required>
+        </label>
+
+        <div class="password-guide">
+          <strong>Your password must contain:</strong>
+          <ul id="password-rules">
+            <li data-rule="length"><span>○</span> At least 8 characters</li>
+            <li data-rule="lower"><span>○</span> One lowercase letter (a–z)</li>
+            <li data-rule="upper"><span>○</span> One uppercase letter (A–Z)</li>
+            <li data-rule="number"><span>○</span> One number (0–9)</li>
+            <li data-rule="symbol"><span>○</span> One special character, e.g. ! @ # $ %</li>
+          </ul>
+        </div>
+
+        <label>
+          Confirm password
+          <input id="signup-confirm-password" type="password"
+                 autocomplete="new-password" maxlength="256"
+                 placeholder="Enter the same password again" required>
+          <small id="password-match-message" aria-live="polite"></small>
+        </label>
+
+        <button class="button primary full-button" type="submit">
+          Create account
+        </button>
+      </form>
+
+      <form id="confirm-form" class="form-stack" hidden>
+        <p class="helper">
+          Enter the confirmation code sent to your registered email address.
+        </p>
+        <label>
+          Email confirmation code
+          <input id="confirmation-code" autocomplete="one-time-code"
+                 inputmode="numeric" placeholder="Enter the code" required>
+        </label>
+        <button class="button primary full-button" type="submit">
+          Confirm email
+        </button>
+        <button id="resend-code" class="text-button" type="button">
+          Resend confirmation code
+        </button>
+      </form>
+
+      <div id="auth-message" class="message" role="status"
+           aria-live="polite" hidden></div>
+    </section>
+
+    <!-- Scheduling application -->
+    <section id="app-section" hidden>
+      <div class="app-heading">
+        <div>
+          <p class="eyebrow">YOUR DAILY PLAN</p>
+          <h2>Build your schedule</h2>
+          <p class="muted">
+            Complete the details so your recommendation reflects your
+            actual tasks, locations and constraints.
+          </p>
+        </div>
+
+        <div class="account-box">
+          <span id="signed-in-user"></span>
+          <button id="signout-button" type="button" class="button secondary small">
+            Sign out
+          </button>
+        </div>
+      </div>
+
+      <form id="schedule-form">
+        <section class="panel form-panel">
+          <div class="panel-heading">
+            <span class="step">01</span>
+            <div>
+              <h3>Planning window</h3>
+              <p>Choose the date and the hours in which tasks can be scheduled.</p>
+            </div>
+          </div>
+
+          <div class="field-grid three-columns">
+            <label>
+              Planning date
+              <input id="plan-date" type="date" required>
+              <small>Choose a date supported by the available forecast.</small>
+            </label>
+            <label>
+              Earliest start
+              <input id="window-start" type="time" value="10:00" required>
+            </label>
+            <label>
+              Latest finish
+              <input id="window-end" type="time" value="19:00" required>
+            </label>
+          </div>
+        </section>
+
+        <section class="panel form-panel">
+          <div class="panel-heading">
+            <span class="step">02</span>
+            <div>
+              <h3>Your home location</h3>
+              <p>Used to consider whether returning home is an option.</p>
+            </div>
+          </div>
+
+          <label>
+            Home location
+            <input id="home-location" type="text"
+                   placeholder="Area, City, State — e.g. Jadavpur, Kolkata, West Bengal"
+                   required>
+            <small>
+              Enter the area or locality, then the city and state.
+              Avoid providing only a city when a specific locality is available.
+            </small>
+          </label>
+        </section>
+
+        <section class="panel form-panel">
+          <div class="panel-heading">
+            <span class="step">03</span>
+            <div>
+              <h3>Your tasks</h3>
+              <p>Add each task and put them in your preferred order. You can reorder them below.</p>
+            </div>
+          </div>
+
+          <div class="notice">
+            <strong>How to enter locations</strong>
+            <p>
+              Use <b>Area, City, State</b>. For example:
+              <b>Jadavpur, Kolkata, West Bengal</b>.
+            </p>
+            <p>
+              <b>Travel duration</b> is the time you estimate travelling
+              from the start location to the end location.
+              <b>Activity duration</b> is the time spent doing the task,
+              excluding travel. HeatWindow does not calculate directions
+              or travel times for you.
+            </p>
+          </div>
+
+          <div id="task-list" class="task-list"></div>
+
+          <button id="add-task-button" type="button" class="button secondary add-button">
+            + Add another task
+          </button>
+        </section>
+
+        <section class="panel form-panel">
+          <div class="panel-heading">
+            <span class="step">04</span>
+            <div>
+              <h3>Planning preferences</h3>
+              <p>Tell HeatWindow which arrangements you are open to.</p>
+            </div>
+          </div>
+
+          <div class="preferences">
+            <label class="check-row">
+              <input id="allow-return-home" type="checkbox" checked>
+              <span>
+                <strong>Consider returning home between tasks</strong>
+                <small>This is a preference. A return trip must not be assumed feasible without a known duration.</small>
+              </span>
+            </label>
+
+            <label class="check-row">
+              <input id="allow-rest-breaks" type="checkbox" checked>
+              <span>
+                <strong>Consider rest breaks</strong>
+                <small>Breaks should reflect weather, time outdoors, activity intensity and vulnerability.</small>
+              </span>
+            </label>
+          </div>
+
+          <label class="rest-field">
+            Preferred rest-break duration (minutes)
+            <input id="preferred-rest-minutes" type="number"
+                   min="1" max="240" step="1" value="30" required>
+            <small>This is your preference, not a requirement for every break.</small>
+          </label>
+
+          <label>
+            Additional constraints <span class="muted">(optional)</span>
+            <textarea id="planning-notes" rows="3"
+              placeholder="e.g. The pharmacy closes at 6 PM, so medicines must be bought before then."></textarea>
+          </label>
+        </section>
+
+        <div class="submit-panel">
+          <div>
+            <strong>Ready to plan?</strong>
+            <p>Check the details before requesting a recommendation.</p>
+          </div>
+          <button id="submit-button" class="button primary" type="submit">
+            Recommend my schedule →
+          </button>
+        </div>
+      </form>
+
+      <div id="request-message" class="message" role="status"
+           aria-live="polite" hidden></div>
+
+      <section id="result-section" class="panel result-panel" hidden>
+        <div class="panel-heading">
+          <span class="step result-step">✓</span>
+          <div>
+            <h2>Your suggested schedule</h2>
+            <p>Review the recommendation and its reasoning.</p>
+          </div>
+        </div>
+
+        <pre id="recommendation-output" class="recommendation-output"></pre>
+        <p class="disclaimer">
+          HeatWindow provides planning guidance using available forecast data.
+          It is not a medical assessment or a guarantee of safety. Check
+          current local conditions before going outdoors.
+        </p>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <strong>HeatWindow</strong>
+    <span>Make room for the weather.</span>
+  </footer>
+</body>
+</html>

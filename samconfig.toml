@@ -1,0 +1,14 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "HeatWindow"
+resolve_s3 = true
+s3_prefix = "HeatWindow"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+parameter_overrides = "BedrockModelId=\"apac.amazon.nova-pro-v1:0\""
+image_repositories = []
+
+[default.global.parameters]
+region = "ap-south-1"

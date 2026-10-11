@@ -1,0 +1,25 @@
+{
+  "name": "heatwindow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/35250/HeatWindow.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/35250/HeatWindow/issues"
+  },
+  "homepage": "https://github.com/35250/HeatWindow#readme",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1149.0",
+    "dotenv": "^18.0.7"
+  }
+}
