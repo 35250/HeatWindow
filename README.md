@@ -4,6 +4,8 @@
 
 **Live application:** https://staging.div2ctk3ctmuy.amplifyapp.com
 
+**Demo Video:** https://youtu.be/ifaVzw-1DMQ
+
 HeatWindow is a weather-aware outdoor task scheduling assistant. Users enter the tasks they need to complete, their route locations, travel and activity durations, task flexibility, planning hours, and the person whose heat exposure should be considered. HeatWindow retrieves hourly weather information for the task locations and uses an Amazon Bedrock language model to recommend a practical schedule with explanations grounded in the available forecast.
 
 > **Important:** HeatWindow is a planning aid, not a medical assessment, a guaranteed-safe schedule, a route planner, or an official heat-warning service. Check current local conditions before going outdoors.
